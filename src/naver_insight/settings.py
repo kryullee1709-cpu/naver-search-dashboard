@@ -283,6 +283,50 @@ def _clean(value: str | None) -> str:
     return value
 
 
+def diagnose() -> dict[str, object]:
+    """인증 정보가 비어 보일 때 어느 경로까지 값이 들어왔는지 보고한다.
+
+    비밀값 자체는 돌려주지 않고 길이와 상태 문자열만 만든다.
+    "값은 넣었는데 앱은 못 찾는" 상황의 원인(Secrets 미저장 / 키 이름 오타 /
+    예시 문구를 그대로 붙여넣음)을 화면에서 바로 구분하기 위한 것이다.
+    """
+    load_env()
+    report: dict[str, object] = {}
+
+    try:
+        import streamlit as st
+    except ModuleNotFoundError:
+        report["secrets"] = "streamlit 미설치"
+    else:
+        try:
+            top = sorted(str(k) for k in st.secrets.keys())
+        except Exception as exc:
+            report["secrets"] = "읽을 수 없음 (" + type(exc).__name__ + ")"
+        else:
+            report["secrets"] = (
+                "최상위 키 " + str(len(top)) + "개: " + (", ".join(top) or "(비어 있음)")
+            )
+
+    found = [
+        str(c.relative_to(PROJECT_ROOT))
+        for c in (PROJECT_ROOT / "config" / ".env", PROJECT_ROOT / ".env")
+        if c.exists()
+    ]
+    report["env_files"] = ", ".join(found) or "없음"
+
+    status: dict[str, str] = {}
+    for key in ENV_KEYS:
+        raw = (os.environ.get(key) or "").strip()
+        if not raw:
+            status[key] = "없음"
+        elif raw.startswith("여기에"):
+            status[key] = "예시 문구 그대로 — 실제 키로 바꿔야 함"
+        else:
+            status[key] = "설정됨 (" + str(len(raw)) + "자)"
+    report["keys"] = status
+    return report
+
+
 def get_credentials(mode: str | None = None) -> Credentials:
     """환경 변수에서 인증 정보를 읽는다."""
     load_env()

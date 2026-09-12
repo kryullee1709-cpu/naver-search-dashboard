@@ -36,6 +36,7 @@ from naver_insight.settings import (  # noqa: E402
     TREND_DEVICES,
     TREND_GENDERS,
     TREND_TIME_UNITS,
+    diagnose,
     get_credentials,
 )
 from views import channel as channel_view  # noqa: E402
@@ -299,6 +300,19 @@ def main() -> None:
             "- **Streamlit Cloud 배포**: 앱 우측 상단 ⋮ → Settings → Secrets 에 "
             "같은 키를 `NAVER_CLIENT_ID = \"...\"` 형식으로 저장하세요."
         )
+        with st.expander("왜 인증 정보를 못 찾는지 확인하기", expanded=False):
+            info = diagnose()
+            st.write("**Streamlit Secrets**: " + str(info["secrets"]))
+            st.write("**.env 파일**: " + str(info["env_files"]))
+            st.table(
+                pd.DataFrame(
+                    sorted(info["keys"].items()), columns=["환경 변수", "상태"]
+                )
+            )
+            st.caption(
+                "Secrets 최상위 키 목록이 비어 있으면 아직 저장되지 않은 것이고, "
+                "키는 보이는데 상태가 `없음` 이면 이름이 다른 것이다."
+            )
     else:
         st.caption(f"인증 모드: `{creds.mode}` · 엔드포인트: `{creds.base_url}`")
 
