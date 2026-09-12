@@ -1,0 +1,22 @@
+[project]
+name = "naver-search-dashboard"
+version = "0.1.0"
+description = "NAVER API HUB 기반 네이버 마켓 인사이트 EDA 대시보드"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "streamlit>=1.38",
+    "requests>=2.32",
+    "pandas>=2.2",
+    "plotly>=5.24",
+    "python-dotenv>=1.0",
+    "scipy>=1.13",
+    "kiwipiepy>=0.20",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"

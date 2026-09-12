@@ -1,0 +1,8 @@
+.venv/
+.env
+__pycache__/
+*.py[cod]
+.streamlit/secrets.toml
+data/cache/*
+!data/cache/.gitkeep
+*.egg-info/

@@ -1,0 +1,12 @@
+[server]
+headless = true
+port = 8501
+
+# 네이버 BI 기반 라이트 테마로 고정한다. 다크 모드는 같은 램프에서 별도 스텝을
+# 다시 잡아 검증해야 하므로, 지금은 라이트 한 가지에만 커밋한다.
+[theme]
+base = "light"
+primaryColor = "#03C75A"
+backgroundColor = "#FFFFFF"
+secondaryBackgroundColor = "#F7FBF9"
+textColor = "#111827"

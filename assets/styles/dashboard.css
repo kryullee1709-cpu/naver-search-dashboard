@@ -1,0 +1,217 @@
+/* 네이버 BI 기반 대시보드 스타일.
+   광택 그라데이션은 UI 크롬(헤더·카드·버튼·탭)에만 적용한다.
+   데이터 마크(막대·선)는 단색 유지 — 면에 그라데이션을 깔면 값이 왜곡돼 보인다. */
+
+:root {
+  --naver-green: #03c75a;
+  --naver-green-lift: #0ae06a;
+  --naver-green-deep: #02a44a;
+  --naver-green-ink: #016b30;
+  --ink: #111827;
+  --ink-muted: #6b7280;
+  --surface: #ffffff;
+  --line: #edf0f2;
+}
+
+.block-container {
+  padding-top: 2rem;
+  max-width: 1440px;
+}
+
+/* ---------- 헤더: 그린 광택 바 + 그라데이션 타이틀 ---------- */
+h1 {
+  font-size: 1.85rem !important;
+  letter-spacing: -0.02em;
+  background: linear-gradient(100deg, var(--naver-green-ink) 0%, var(--naver-green) 55%, var(--naver-green-lift) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  padding-bottom: 0.1em;
+}
+
+h1::after {
+  content: "";
+  display: block;
+  height: 3px;
+  margin-top: 0.5rem;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--naver-green) 0%, rgba(3, 199, 90, 0.35) 45%, rgba(3, 199, 90, 0) 100%);
+}
+
+/* ---------- 지표 카드: 위쪽 하이라이트로 광택감 ---------- */
+[data-testid="stMetric"] {
+  position: relative;
+  padding: 0.9rem 1.1rem;
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  overflow: hidden;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0) 55%),
+    linear-gradient(160deg, #f4fdf8 0%, #ffffff 60%, #f8fbf9 100%);
+  box-shadow:
+    0 1px 2px rgba(16, 24, 40, 0.04),
+    0 8px 20px -12px rgba(2, 106, 48, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+/* 카드 상단을 가로지르는 얇은 광택 라인 */
+[data-testid="stMetric"]::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 2px;
+  background: linear-gradient(90deg, rgba(3, 199, 90, 0) 0%, var(--naver-green) 35%, var(--naver-green-lift) 60%, rgba(3, 199, 90, 0) 100%);
+}
+
+[data-testid="stMetricValue"] {
+  font-size: 1.55rem;
+  font-weight: 700;
+  color: var(--ink);
+  letter-spacing: -0.01em;
+}
+
+[data-testid="stMetricLabel"] {
+  color: var(--ink-muted);
+  font-size: 0.82rem;
+}
+
+/* ---------- 기본 버튼: 그린 광택 ---------- */
+.stButton > button[kind="primary"] {
+  border: 0;
+  border-radius: 11px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: #fff;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.28) 0%, rgba(255, 255, 255, 0) 52%),
+    linear-gradient(180deg, var(--naver-green-lift) 0%, var(--naver-green) 48%, var(--naver-green-deep) 100%);
+  box-shadow:
+    0 1px 2px rgba(2, 106, 48, 0.25),
+    0 10px 22px -12px rgba(2, 106, 48, 0.65),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45);
+  transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.12s ease;
+}
+
+.stButton > button[kind="primary"]:hover {
+  transform: translateY(-1px);
+  filter: saturate(1.06);
+  box-shadow:
+    0 2px 4px rgba(2, 106, 48, 0.24),
+    0 16px 28px -14px rgba(2, 106, 48, 0.72),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+
+.stButton > button[kind="primary"]:active {
+  transform: translateY(0);
+  filter: saturate(0.98) brightness(0.98);
+}
+
+/* 다운로드 버튼은 한 단계 낮은 위계 — 테두리형 */
+.stDownloadButton > button {
+  border-radius: 10px;
+  border: 1px solid rgba(3, 199, 90, 0.45);
+  color: var(--naver-green-ink);
+  background: linear-gradient(180deg, #ffffff 0%, #f3fbf6 100%);
+  font-weight: 600;
+}
+
+.stDownloadButton > button:hover {
+  border-color: var(--naver-green);
+  color: var(--naver-green-deep);
+}
+
+/* ---------- 사이드바: 아주 옅은 세로 그라데이션 ---------- */
+[data-testid="stSidebar"] {
+  background: linear-gradient(180deg, #f7fdf9 0%, #ffffff 38%, #f9fbfa 100%);
+  border-right: 1px solid var(--line);
+}
+
+[data-testid="stSidebar"] h2 {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--naver-green-ink);
+  margin-bottom: 0.15rem;
+}
+
+[data-testid="stSidebar"] .stCheckbox {
+  margin-bottom: -0.5rem;
+}
+
+/* ---------- 탭: 활성 탭에 그린 광택 밑줄 ---------- */
+.stTabs [data-baseweb="tab-list"] {
+  gap: 0.25rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.stTabs [data-baseweb="tab"] {
+  padding: 0.45rem 1.05rem;
+  border-radius: 10px 10px 0 0;
+  color: var(--ink-muted);
+  font-weight: 600;
+}
+
+.stTabs [aria-selected="true"] {
+  color: var(--naver-green-ink) !important;
+  background: linear-gradient(180deg, rgba(3, 199, 90, 0.1) 0%, rgba(3, 199, 90, 0) 100%);
+}
+
+.stTabs [data-baseweb="tab-highlight"] {
+  background: linear-gradient(90deg, var(--naver-green-lift), var(--naver-green), var(--naver-green-deep));
+  height: 3px;
+  border-radius: 999px;
+}
+
+/* ---------- 진행 바 ---------- */
+.stProgress > div > div > div > div {
+  background: linear-gradient(90deg, var(--naver-green-lift), var(--naver-green), var(--naver-green-deep));
+}
+
+/* ---------- 차트·표 컨테이너 ---------- */
+[data-testid="stPlotlyChart"],
+[data-testid="stDataFrame"] {
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 0.35rem;
+  background: linear-gradient(180deg, #ffffff 0%, #fcfefd 100%);
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.03);
+}
+
+/* 넓은 표·차트는 컨테이너 안에서만 가로 스크롤 */
+[data-testid="stPlotlyChart"] {
+  overflow-x: auto;
+}
+
+/* ---------- 기간 적용 범위 배지 ---------- */
+.period-scope {
+  margin: -0.35rem 0 0.6rem;
+  font-size: 0.74rem;
+  line-height: 1.9;
+}
+
+.period-scope .scope-row b {
+  color: var(--ink-muted);
+  font-size: 0.72rem;
+  margin-right: 0.35rem;
+}
+
+.scope-chip {
+  display: inline-block;
+  padding: 0.06rem 0.42rem;
+  margin: 0 0.2rem 0.2rem 0;
+  border-radius: 999px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.scope-chip.on {
+  color: #01532a;
+  border: 1px solid rgba(3, 199, 90, 0.45);
+  background: linear-gradient(180deg, #eafaf1 0%, #d8f5e6 100%);
+}
+
+.scope-chip.off {
+  color: #9099a3;
+  border: 1px solid var(--line);
+  background: linear-gradient(180deg, #fbfcfc 0%, #f2f4f5 100%);
+  text-decoration: line-through;
+}
