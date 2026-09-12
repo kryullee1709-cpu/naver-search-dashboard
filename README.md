@@ -43,6 +43,30 @@ uv run streamlit run app/main.py
 
 브라우저에서 http://localhost:8501 접속.
 
+### Streamlit Community Cloud 배포
+
+`.env` 는 저장소에 올라가지 않으므로(`.gitignore` 제외) 배포본은 인증 정보를
+**Secrets** 로 받는다. 이 설정을 하지 않으면 앱이 "인증 정보가 없습니다" 안내만
+띄운다.
+
+1. share.streamlit.io 에서 이 저장소를 연결하고 **Main file path** 를
+   `app/main.py` 로 지정한다.
+2. 앱 화면 우측 상단 **⋮ → Settings → Secrets** 를 연다.
+3. [`config/secrets.toml.example`](config/secrets.toml.example) 내용을 붙여넣고
+   실제 키로 바꾼 뒤 저장한다.
+
+```toml
+NAVER_AUTH_MODE = "hub"
+NAVER_CLIENT_ID = "발급받은_Client_ID"
+NAVER_CLIENT_SECRET = "발급받은_Client_Secret"
+```
+
+저장하면 앱이 자동으로 재시작된다. 로컬에 `.env` 가 있으면 `.env` 가 우선하므로
+기존 로컬 실행 방식은 그대로 쓰면 된다.
+
+> 네이버 클라우드 플랫폼 API 키는 요청 수에 따라 과금될 수 있다. 공개 배포 시
+> 접근 범위를 확인할 것.
+
 ## 3. 사용법
 
 1. 사이드바 **① 검색어** 에 쉼표로 구분해 입력 — 예: `탕후루, 마라탕, 두바이초콜릿`

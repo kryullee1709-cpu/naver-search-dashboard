@@ -25,14 +25,65 @@ LEGACY_BASE_URL_DEFAULT = "https://openapi.naver.com"
 TREND_BASE_URL_DEFAULT = HUB_BASE_URL_DEFAULT
 
 
-def load_env() -> None:
-    """.env 를 매 호출마다 다시 읽어 프로세스 환경에 반영한다.
+# .env / Secrets 어느 쪽에서든 읽어들이는 키 목록.
+ENV_KEYS = (
+    "NAVER_AUTH_MODE",
+    "NAVER_CLIENT_ID",
+    "NAVER_CLIENT_SECRET",
+    "NAVER_LEGACY_CLIENT_ID",
+    "NAVER_LEGACY_CLIENT_SECRET",
+    "NAVER_HUB_BASE_URL",
+    "NAVER_TREND_BASE_URL",
+    "NAVER_LEGACY_BASE_URL",
+)
 
-    config/.env 를 먼저, 루트 .env 를 나중에 읽어 루트가 우선한다.
+
+def load_secrets() -> None:
+    """Streamlit Secrets 를 프로세스 환경에 반영한다.
+
+    Streamlit Community Cloud 에는 .env 를 올릴 수 없으므로(저장소에서 제외됨)
+    앱 설정의 Secrets 가 유일한 주입 경로다. 평평한 키와 [naver] 테이블을 모두
+    받아준다. secrets.toml 이 없으면 st.secrets 접근 자체가 예외를 던지기 때문에
+    통째로 감싼다 — 로컬 .env 실행에는 영향이 없어야 한다.
+    """
+    try:
+        import streamlit as st
+    except ModuleNotFoundError:
+        return
+
+    try:
+        secrets = st.secrets
+    except Exception:
+        return
+
+    def _read(source, key: str) -> str:
+        try:
+            value = source[key]
+        except Exception:
+            return ""
+        return value.strip() if isinstance(value, str) else ""
+
+    try:
+        section = secrets["naver"]
+    except Exception:
+        section = None
+
+    for key in ENV_KEYS:
+        value = _read(secrets, key) or (_read(section, key) if section is not None else "")
+        if value:
+            os.environ[key] = value
+
+
+def load_env() -> None:
+    """Secrets 와 .env 를 매 호출마다 다시 읽어 프로세스 환경에 반영한다.
+
+    Secrets 를 먼저, config/.env 를 다음, 루트 .env 를 마지막에 읽어
+    뒤로 갈수록 우선한다 — 로컬에 .env 가 있으면 그 값이 최종이다.
     파일에 값이 있으면 이미 설정된 값이라도 덮어쓴다 — 서버를 띄운 뒤에
     .env 를 채우는 경우, 처음 로드된 빈 문자열이 남아 계속 "인증 정보 없음"으로
     보이는 문제를 막기 위함이다. 빈 값은 무시하므로 셸 환경 변수는 지워지지 않는다.
     """
+    load_secrets()
     for candidate in (PROJECT_ROOT / "config" / ".env", PROJECT_ROOT / ".env"):
         if not candidate.exists():
             continue

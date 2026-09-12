@@ -254,7 +254,8 @@ def run_collection(opts: dict) -> None:
     creds = get_credentials()
     if not creds.is_ready:
         st.error(
-            "인증 정보가 없습니다. 프로젝트 루트 `.env` 에 "
+            "인증 정보가 없습니다. 로컬은 프로젝트 루트 `.env`, "
+            "Streamlit Cloud 는 앱 설정의 Secrets 에 "
             "`NAVER_CLIENT_ID` / `NAVER_CLIENT_SECRET` 을 채워주세요."
         )
         return
@@ -292,8 +293,11 @@ def main() -> None:
 
     if not creds.is_ready:
         st.warning(
-            "`.env` 에 인증 정보가 없습니다. `config/.env.example` 을 루트에 `.env` 로 "
-            "복사한 뒤 `NAVER_CLIENT_ID`·`NAVER_CLIENT_SECRET` 을 입력하세요."
+            "인증 정보가 없습니다.\n\n"
+            "- **로컬 실행**: `config/.env.example` 을 루트에 `.env` 로 복사한 뒤 "
+            "`NAVER_CLIENT_ID`·`NAVER_CLIENT_SECRET` 을 입력하세요.\n"
+            "- **Streamlit Cloud 배포**: 앱 우측 상단 ⋮ → Settings → Secrets 에 "
+            "같은 키를 `NAVER_CLIENT_ID = \"...\"` 형식으로 저장하세요."
         )
     else:
         st.caption(f"인증 모드: `{creds.mode}` · 엔드포인트: `{creds.base_url}`")
