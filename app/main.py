@@ -36,9 +36,16 @@ from naver_insight.settings import (  # noqa: E402
     TREND_DEVICES,
     TREND_GENDERS,
     TREND_TIME_UNITS,
-    diagnose,
     get_credentials,
 )
+
+# 배포 런타임은 저장소가 갱신돼도 엔트리포인트만 다시 실행하고 import 된 모듈은
+# sys.modules 의 옛 버전을 그대로 쓴다. 새 이름을 그냥 import 하면 리부트 전까지
+# 앱 전체가 ImportError 로 죽으므로, 부가 기능은 없으면 없는 대로 넘어간다.
+try:  # noqa: E402
+    from naver_insight.settings import diagnose
+except ImportError:  # pragma: no cover - 런타임에 옛 모듈이 캐시된 경우
+    diagnose = None
 from views import channel as channel_view  # noqa: E402
 from views import overview as overview_view  # noqa: E402
 from views import trend as trend_view  # noqa: E402
@@ -300,19 +307,22 @@ def main() -> None:
             "- **Streamlit Cloud 배포**: 앱 우측 상단 ⋮ → Settings → Secrets 에 "
             "같은 키를 `NAVER_CLIENT_ID = \"...\"` 형식으로 저장하세요."
         )
-        with st.expander("왜 인증 정보를 못 찾는지 확인하기", expanded=False):
-            info = diagnose()
-            st.write("**Streamlit Secrets**: " + str(info["secrets"]))
-            st.write("**.env 파일**: " + str(info["env_files"]))
-            st.table(
-                pd.DataFrame(
-                    sorted(info["keys"].items()), columns=["환경 변수", "상태"]
+        if diagnose is None:
+            st.caption("진단 패널은 앱을 Reboot 한 뒤에 표시됩니다.")
+        else:
+            with st.expander("왜 인증 정보를 못 찾는지 확인하기", expanded=False):
+                info = diagnose()
+                st.write("**Streamlit Secrets**: " + str(info["secrets"]))
+                st.write("**.env 파일**: " + str(info["env_files"]))
+                st.table(
+                    pd.DataFrame(
+                        sorted(info["keys"].items()), columns=["환경 변수", "상태"]
+                    )
                 )
-            )
-            st.caption(
-                "Secrets 최상위 키 목록이 비어 있으면 아직 저장되지 않은 것이고, "
-                "키는 보이는데 상태가 `없음` 이면 이름이 다른 것이다."
-            )
+                st.caption(
+                    "Secrets 최상위 키 목록이 비어 있으면 아직 저장되지 않은 것이고, "
+                    "키는 보이는데 상태가 `없음` 이면 이름이 다른 것이다."
+                )
     else:
         st.caption(f"인증 모드: `{creds.mode}` · 엔드포인트: `{creds.base_url}`")
 
