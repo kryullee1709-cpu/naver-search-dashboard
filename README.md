@@ -104,6 +104,12 @@ naver-search-dashboard/
 └── scripts/                # 실행 스크립트
 ```
 
+### 문서
+
+- [`docs/api-reference.md`](docs/api-reference.md) — 네이버 API 사양 정리
+- [`docs/dashboard-playbook.md`](docs/dashboard-playbook.md) — EDA부터 배포까지의
+  제작 순서와 규칙. 다음 프로젝트를 같은 방식으로 만들 때의 기준 문서.
+
 ## 5. 공식 문서 기준 제약
 
 - 검색 API: `display` 1~100, `start` 1~1000 — **지역(local)은 `display` 최대 5, `start` 1**
